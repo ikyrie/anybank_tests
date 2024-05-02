@@ -7,14 +7,14 @@ import '../database.dart';
 //TODO: Métodos de `findALl` e `delete` não são relevantes para o projeto.
 class AccountDao {
   static const String tableSQL = 'CREATE TABLE $_tablename('
-      '$_number INTEGER PRIMARY KEY, '
+      '$_id INTEGER PRIMARY KEY, '
       '$_name TEXT, '
       '$_balance REAL, '
       '$_cpf TEXT'
       ');';
 
   static const String _tablename = "accountTable";
-  static const String _number = "number";
+  static const String _id = "id";
   static const String _name = "name";
   static const String _cpf = "cpf";
   static const String _balance = "balance";
@@ -39,7 +39,7 @@ class AccountDao {
   save(Account account) async {
     _verifyDatabaseOpen();
 
-    var itemExists = await findByNumber(account.number);
+    var itemExists = await findById(account.id);
 
     Map<String, dynamic> accountMap = fromObjectToMapData(account);
 
@@ -51,20 +51,20 @@ class AccountDao {
       return await _database!.update(
         _tablename,
         accountMap,
-        where: '$_number = ?',
-        whereArgs: [account.number],
+        where: '$_id = ?',
+        whereArgs: [account.id],
       );
     }
   }
 
   // Buscar uma conta pro número
-  Future<List<Account>> findByNumber(int number) async {
+  Future<List<Account>> findById(int id) async {
     _verifyDatabaseOpen();
 
     final List<Map<String, dynamic>> result = await _database!.query(
       _tablename,
-      where: '$_number = ?',
-      whereArgs: [number],
+      where: '$_id = ?',
+      whereArgs: [id],
     );
 
     return fromMapDataToListObject(result);
@@ -75,7 +75,7 @@ class AccountDao {
   // Converte de um objeto account para um map
   Map<String, dynamic> fromObjectToMapData(Account account) {
     return {
-      _number: account.number,
+      _id: account.id,
       _name: account.name,
       _cpf: account.cpf,
       _balance: account.balance,
@@ -88,7 +88,7 @@ class AccountDao {
 
     for (Map<String, dynamic> lineElement in map) {
       final Account account = Account(
-        number: lineElement[_number],
+        id: lineElement[_id],
         balance: lineElement[_balance],
         cpf: lineElement[_cpf],
         name: lineElement[_name],
