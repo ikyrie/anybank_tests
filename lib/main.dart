@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tdd/data/demo_database.dart';
 import 'package:flutter_tdd/screens/dashboard.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await setDemoDatabase();
 
   runApp(const AnyBank());
 }
