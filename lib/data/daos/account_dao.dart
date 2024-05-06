@@ -19,24 +19,24 @@ class AccountDao {
   static const String _cpf = "cpf";
   static const String _balance = "balance";
 
-  Database? _database;
+  Database? database;
 
-  openDatabase() async {
-    _database = await getDatabase();
+  openDatabase(Database currentDatabase) async {
+    database = await getDatabase();
   }
 
   _verifyDatabaseOpen() {
-    if (_database == null) {
+    if (database == null) {
       throw DatabaseNotOpenException();
     }
   }
 
   closeDatabase() async {
     _verifyDatabaseOpen();
-    _database!.close();
+    database!.close();
   }
 
-  save(Account account) async {
+  Future<int> save(Account account) async {
     _verifyDatabaseOpen();
 
     var itemExists = await findById(account.id);
@@ -45,10 +45,10 @@ class AccountDao {
 
     if (itemExists.isEmpty) {
       // Criar
-      return await _database!.insert(_tablename, accountMap);
+      return await database!.insert(_tablename, accountMap);
     } else {
       // Sobreescrever
-      return await _database!.update(
+      return await database!.update(
         _tablename,
         accountMap,
         where: '$_id = ?',
@@ -61,7 +61,7 @@ class AccountDao {
   Future<List<Account>> findById(int id) async {
     _verifyDatabaseOpen();
 
-    final List<Map<String, dynamic>> result = await _database!.query(
+    final List<Map<String, dynamic>> result = await database!.query(
       _tablename,
       where: '$_id = ?',
       whereArgs: [id],
