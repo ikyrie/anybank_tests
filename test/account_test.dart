@@ -7,39 +7,39 @@ void main() {
     account = Account(
         id: 123, cpf: "333.222.333-22", balance: 100.00, name: "Beto Barros");
   });
-  group("Testes de transferência", () {
-    test("Testa uma transferência", () {
 
+  group("Account Transfer Testes", () {
+    test("Deve atualizar o saldo corretamente após uma transferência válida", () {
       account.transfer(100);
       
       expect(account.balance, 0);
     });
 
-    test("Transferir números negativos", () {
-      account.transfer(-100.0);
-
-      expect(account.balance, 100);
+    test("Deve lançar InvalidAmountException quando o valor é menor ou igual a zero", () {
+      expect(() => account.transfer(0), throwsA(isA<InvalidAmountException>()));
+      expect(() => account.transfer(-100), throwsA(isA<InvalidAmountException>()));
     });
 
-    test("Transferir qualquer coisa que não seja um número", () {
+    test("Deve lançar InsufficientBalanceException quando o valor é maior do que o saldo", () {
+      expect(() => account.transfer(101), throwsA(isA<InsufficientBalanceException>()));
     });
 
-    test("Transferir 0", () {
-      account.transfer(0);
-
-      expect(account.balance, 100);
+    test("Deve lançar NullAmountException quando o valor é nulo", (){
+      expect(() => account.transfer(null), throwsA(isA<NullAmountException>()));
     });
 
-    test("Transferir mais do que disponível no saldo", () {
-      account.transfer(101);
+  });
 
-      expect(account.balance, 100);
+  group("Account interest rates", () {
+    test("Deve-se aplicar um juros de 1% quando o tipo de conta for conta corrente", () {
+      account.applyInterest();
+      expect(account.balance, 101);
     });
 
-    test("Transferir quantidade nula", (){
-      account.transfer(null);
-
-      expect(account.balance, 100);
+    test("Deve-se aplicar um juros de 3% quando o tipo de conta for poupança", () {
+      Account savingsAccount = Account(id: 1, cpf: "333.333.333-33", balance: 100, name: "Ademir de Barros", accountType: AccountType.savings);
+      savingsAccount.applyInterest();
+      expect(savingsAccount.balance, 103);
     });
   });
 }
